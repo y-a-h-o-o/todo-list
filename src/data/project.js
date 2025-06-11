@@ -1,4 +1,4 @@
-import { create_todo } from "./todo.js"
+import { create_todo } from "./todo.js";
 
 // Projects -> Just a container for TODOs. 
 // Can store multiple TODOs. Can be added or deleted. Should this be handled by the project itself ?
@@ -6,9 +6,10 @@ import { create_todo } from "./todo.js"
 // Has a DOM function to show all TODOs ? Or put that in a seperate JS file ?
 // idk :/ , 
 
-function create_project(name) {
+export function create_project(name) {
 	const todo_list = [];
 	const id = crypto.randomUUID(); 
+	const display = false; 
 
 	const delete_todo = (todo_id) => {
 		for(let i = 0; i < todo_list.length; i++) {
@@ -19,13 +20,12 @@ function create_project(name) {
 		}
 	
 		console.log("Could not find TODO for deletion!");
-	}
+	};
 	
 	const add_todo = (title, description, due_date, priority, notes) => {
 		const todo = create_todo(title, description, due_date, priority, notes);
-
 		todo_list.push(todo); 
-	}
+	};
 
-	return { id, name, todo_list, delete_todo, add_todo }; 
+	return { display, id, name, todo_list, delete_todo, add_todo }; 
 }

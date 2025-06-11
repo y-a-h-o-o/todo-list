@@ -6,5 +6,6 @@
 
 export function create_todo(title, description, due_date, priority, notes) {
 	const id = crypto.randomUUID();
-	return { id, title, description, due_date, priority, notes }; 	
+	const display = false; 
+	return { display, id, title, description, due_date, priority, notes }; 	
 }
