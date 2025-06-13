@@ -10,6 +10,7 @@ export function create_project(name) {
 	const todo_list = [];
 	const id = crypto.randomUUID(); 
 	const display = false; 
+	const todo_display = false; 
 
 	const delete_todo = (todo_id) => {
 		for(let i = 0; i < todo_list.length; i++) {
@@ -27,5 +28,5 @@ export function create_project(name) {
 		todo_list.push(todo); 
 	};
 
-	return { display, id, name, todo_list, delete_todo, add_todo }; 
+	return { display, todo_display, id, name, todo_list, delete_todo, add_todo }; 
 }

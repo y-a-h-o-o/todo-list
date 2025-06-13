@@ -14,5 +14,49 @@
 	Add Project	
 </button>
 </aside>
+<dialog id = "project">
+<form method = "dialog">
+	<label>
+		Project Name: 
+		<input name = "project_name" type = "text" required>
+	</label>
+	<input type = "submit" id = "close" value = "Create Project" required>
+</form>
+</dialog>
+<dialog id = "todo">
+<form method = "dialog">
+	<div>
+	<label>
+		Todo Name: 
+		<input name = "todo_name" type = "text" id = "todo_name" required>
+	</label> 
+	</div>
+	<div>
+	<label>
+		Description:
+		<textarea name = "description" id = "todo_desc" rows = "15" cols = "40" placeholder = "Some dumbass shit I gotta do..." required></textarea>		
+	</label>
+	</div>
+	<div>
+		<label>
+		Due Date: 
+		<input name = "due_date" type = "datetime-local" id = "todo_date" required>
+		</label>
+	</div>
+	<div>
+		<label>
+		Priority:
+		<input name = "priority" type = "range" min = "0" max = "10" id = "priority" required>
+		</label>
+	</div>
+	<div>
+	<label>
+		Notes:
+		<textarea name = "notes" id = "todo_desc" rows = "10" cols = "20" placeholder = "Some dumbass notes that are completely useless..." required></textarea>		
+	</label>
+	</div>
+	<input type = "submit" id = "close" value = "Create Todo" required>
+</form>
+</dialog>
 </body>
 </html>
