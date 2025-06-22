@@ -14,7 +14,7 @@ export function create_project(name) {
 
 	const delete_todo = (todo_id) => {
 		for(let i = 0; i < todo_list.length; i++) {
-			if(todo_list[i].id == todo_id) {
+			if(todo_list[i].id === todo_id) {
 				todo_list.splice(i, 1);
 				return;  
 			}	
@@ -26,6 +26,7 @@ export function create_project(name) {
 	const add_todo = (title, description, due_date, priority, notes) => {
 		const todo = create_todo(title, description, due_date, priority, notes);
 		todo_list.push(todo); 
+		return todo; 
 	};
 
 	return { display, todo_display, id, name, todo_list, delete_todo, add_todo }; 

@@ -6,7 +6,7 @@
 // but we need to seperate the DOM and the Application logic. 
 // Ok, so we need a DOM method to display all DOM elements from an array. 
 
-export function create_DOM_handler(container) {
+export function create_DOM_handler(container, display_container) {
 	const todo_dialog = document.querySelector("dialog#todo");
 	const todo_dialog_btn = document.querySelector("dialog#todo input#close");
 	const todo_form = document.querySelector("dialog#todo form");
@@ -14,12 +14,147 @@ export function create_DOM_handler(container) {
 	if(!container) {
 		console.log("Please pass a valid container!");
 		return; 
+	} 
+	
+	const date_month = (date_obj) => {
+		switch(date_obj.getMonth()) {
+			case 0:
+				return "January";
+				break; 
+			case 1:
+				return "Feburary";
+				break;
+			case 2:
+				return "March";
+				break; 
+			case 3:
+				return "April";
+				break;	
+			case 4:
+				return "May";
+				break; 
+			case 5:
+				return "June";
+				break;
+			case 6:
+				return "July";
+				break; 
+			case 7:
+				return "August";
+				break;
+			case 8:
+				return "September";
+				break; 
+			case 9:
+				return "October";
+				break;
+			case 10:
+				return "November";
+				break; 
+			case 11:
+				return "December";
+				break;
+		}	
+	}
+		
+	const date_time = (date_obj) => {
+		let ans = "";
+		let am = true; 
+		
+		if(date_obj.getHours() === 0) {
+			ans += 12;  
+		} else if(date_obj.getHours() > 12){
+			ans += (date_obj.getHours() - 12); 
+			am = false;
+		} else {
+			ans += date_obj.getHours();
+			if(date_obj.getHours() === 12) {
+				am = false; 
+			}
+		}
+
+		ans += ":"; 
+			
+		if(Math.trunc(date_obj.getMinutes() / 10) === 0) {
+			ans += "0"; 
+		}
+
+		ans += date_obj.getMinutes(); 
+
+		if(am) {
+			ans += " AM"; 
+		} else {
+			ans += " PM";
+		}
+
+		return ans;
+	}
+
+	const display_todo = (todo_ref) => {
+		// Needs to display title, description due_date, priority, notes
+		// + Some way to edit all of these values. 
+		// Just include a general button so we can reuse the form
+		// dialog we already created :P. 
+		
+		// Clear previous display
+		display_container.innerHTML = ''; 
+		
+		const todo_title = document.createElement("h1");
+		todo_title.textContent = todo_ref.title;
+		
+		const todo_date = new Date(todo_ref.due_date);
+		// We need month, date, hours, minutes. 
+		const due_date = document.createElement("h4");
+		due_date.textContent = "DUE: " + date_month(todo_date) + " " + todo_date.getDate() + " " + date_time(todo_date);  	
+
+		const description = document.createElement("p");
+		description.textContent = "Description: " + todo_ref.description; 
+		
+		const priority = document.createElement("h4");
+		priority.textContent = "Priority: " + todo_ref.priority;
+		
+		const notes = document.createElement("p");
+		notes.textContent = "Notes: " + todo_ref.notes; 
+	
+		display_container.append(todo_title);
+		display_container.append(due_date);
+		display_container.append(priority);
+		display_container.append(description);
+		display_container.append(notes);
+	}
+
+	const display_project = (project_ref) => {
+		// Clear previous display
+		display_container.innerHTML = ''; 
+		
+		// Display the project; 
+		const project_title = document.createElement("h1");
+		project_title.textContent = project_ref.name;
+		
+		const todo_list_container = document.createElement("form");
+		const todo_list = project_ref.todo_list; 
+		
+		todo_list.sort((a, b) => Date(a.due_date) - Date(b.due_date)); 
+		
+		for(let i = 0; i < todo_list.length; i++) {
+			const todo_item = document.createElement("label");
+			todo_item.textContent = todo_list[i].title; 
+			const check_box = document.createElement("input");
+			check_box.setAttribute("type", "checkbox");
+			
+			todo_item.append(check_box);
+			todo_list_container.append(todo_item);	
+		} 
+		
+		// Add to display container;
+		display_container.append(project_title);
+		display_container.append(todo_list_container);
 	}
 
 	const create_DOM_todos = (projects, project_id) => {
 		let project_ref; 
 		for(let i = 0; i < projects.length; i++) {
-			if(projects[i].id == project_id) {
+			if(projects[i].id === project_id) {
 				project_ref = projects[i]; 
 				break; 
 			}
@@ -38,6 +173,9 @@ export function create_DOM_handler(container) {
 				if(todo_ref[i].display === true) {
 					continue; 
 				}
+
+				const todo_item = todo_ref[i]; 
+
 				const todo_cont = document.createElement("div");
 				const delete_btn = document.createElement("button");
 				const todo_btn = document.createElement("button");
@@ -47,13 +185,14 @@ export function create_DOM_handler(container) {
 				delete_btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>delete</title><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" /></svg>';
 				
 				delete_btn.addEventListener("click", (e) => {
-					const parent_elem = e.currentTarget.parentElement;
-					const todo_id = parent_elem.getAttribute("todo_id");
-
-					project_ref.delete_todo(todo_id); 
-					parent_elem.remove();
+					project_ref.delete_todo(todo_item.id); 
+					todo_cont.remove();	
 				});
 				
+				todo_btn.addEventListener("click", (e) => {
+					display_todo(todo_item);
+				});
+
 				todo_btn.textContent = todo_ref[i].title; 
 				
 				DOM_project.append(todo_cont);
@@ -62,21 +201,34 @@ export function create_DOM_handler(container) {
 				todo_ref[i].display = true; 
 			}
 		}
+		
+		let pressed = false; 
 
 		add_todo_btn.addEventListener("click", (e) => {
+			pressed = true; 
 			todo_dialog.showModal();		
-			update_todos(); 	
 		});
 		
+		// This listener gets added to the same button multiple times;
+		// We need to do something about that;
+		// My stupid fix is the pressed boolean variable that gets
+		// passed to the other function because they are defined through the
+		// same closure :P. 
 		todo_dialog_btn.addEventListener("click", (e) => {
+			if(!pressed) {
+				return;
+			}
 			const form_data = new FormData(todo_form);
 			const title = form_data.get("todo_name");
 			const description = form_data.get("description"); 
 			const due_date = form_data.get("due_date");
 			const priority = form_data.get("priority");
 			const notes = form_data.get("notes");
-			project_ref.add_todo(title, description, due_date, priority, notes);
+			
+			const todo_ref = project_ref.add_todo(title, description, due_date, priority, notes);
 			update_todos(); 
+			display_todo(todo_ref);
+			pressed = false; 
 			e.preventDefault(); 
 			todo_dialog.close(); 
 		});	
@@ -88,7 +240,7 @@ export function create_DOM_handler(container) {
 	const toggle_DOM_todos = (projects, project_id) => {
 		let project_ref; 
 		for(let i = 0; i < projects.length; i++) {
-			if(projects[i].id == project_id) {
+			if(projects[i].id === project_id) {
 				project_ref = projects[i]; 
 				break; 
 			}
@@ -113,6 +265,8 @@ export function create_DOM_handler(container) {
 				continue; 
 			}
 			
+			const project_ref = projects[i];
+
 			const DOM_project = document.createElement("div");
 			const delete_btn = document.createElement("button");
 			const drop_down = document.createElement("button");
@@ -125,29 +279,27 @@ export function create_DOM_handler(container) {
 			drop_down.setAttribute("id", "drop_btn");
 			drop_down.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>menu-down</title><path d="M7,10L12,15L17,10H7Z" /></svg>'; 
 							
+			main_btn.addEventListener("click", (e) => {
+				display_project(project_ref); 	
+			});
+			
 			delete_btn.addEventListener("click", (e) => {
-				const id = e.currentTarget.parentElement.getAttribute("project_id"); 
 				for(let j = 0; j < projects.length; j++) {
-					if(projects[j].id === id) {
+					if(projects[j].id === project_ref.id) {
 						projects.splice(j, 1);
 						display_DOM_projects(projects);
 					}	
 				}
+				display_container.innerHTML = '';
 				DOM_project.remove(); 	
 			});
 			
 			drop_down.addEventListener("click", (e) => {
-				const id = e.currentTarget.parentElement.getAttribute("project_id"); 
-				for(let j = 0; j < projects.length; j++) {
-					if(projects[j].id !== id) {
-						continue;
-					}
-					if(!projects[j].todo_display) {
-						create_DOM_todos(projects, id);		
-					} else {
-						toggle_DOM_todos(projects, id);	
-					}
-				}	
+				if(!project_ref.todo_display) {
+					create_DOM_todos(projects, project_ref.id);		
+				} else {
+					toggle_DOM_todos(projects, project_ref.id);	
+				}
 			});			
 
 			container.append(DOM_project); 

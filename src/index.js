@@ -4,8 +4,9 @@ import { create_app } from "./data/app.js";
 // required 
 console.log("Hallo :3");
 
-// insert parent continaer here
+// parent container and display container 
 const parent_container = document.querySelector("aside");
+const display_container = document.querySelector("div#display");
 
 // Dialog :) 
 const project_dialog = document.querySelector("dialog#project"); 
@@ -18,7 +19,7 @@ const project_dialog_btn = document.querySelector("dialog#project input#close");
 const project_form = document.querySelector("dialog#project form");
 
 // Application creation
-const app = create_app(parent_container);
+const app = create_app(parent_container, display_container);
 app.add_project("Default Project...");
 
 project_btn.addEventListener("click", (e) => {

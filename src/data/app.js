@@ -6,9 +6,9 @@
 import { create_project } from "./project.js";
 import { create_DOM_handler } from "../dom/dom_handler.js" 
 
-export function create_app(container) {
+export function create_app(container, display_container) {
 	const projects = [];
-	const handler = create_DOM_handler(container);
+	const handler = create_DOM_handler(container, display_container);
 
 	const add_project = (name) => {
 		const project = create_project(name); 	
