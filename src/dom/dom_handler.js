@@ -6,7 +6,7 @@
 // but we need to seperate the DOM and the Application logic. 
 // Ok, so we need a DOM method to display all DOM elements from an array. 
 
-export function create_DOM_handler(container, display_container) {
+export function create_DOM_handler(container, display_container, storage_handler) {
 	const todo_dialog = document.querySelector("dialog#todo");
 	const todo_dialog_btn = document.querySelector("dialog#todo input#close");
 	const todo_form = document.querySelector("dialog#todo form");
@@ -141,7 +141,6 @@ export function create_DOM_handler(container, display_container) {
 			todo_item.textContent = todo_list[i].title; 
 			const check_box = document.createElement("input");
 			check_box.setAttribute("type", "checkbox");
-			
 			todo_item.append(check_box);
 			todo_list_container.append(todo_item);	
 		} 
@@ -173,7 +172,7 @@ export function create_DOM_handler(container, display_container) {
 				if(todo_ref[i].display === true) {
 					continue; 
 				}
-
+				
 				const todo_item = todo_ref[i]; 
 
 				const todo_cont = document.createElement("div");
@@ -209,11 +208,10 @@ export function create_DOM_handler(container, display_container) {
 			todo_dialog.showModal();		
 		});
 		
-		// This listener gets added to the same button multiple times;
-		// We need to do something about that;
-		// My stupid fix is the pressed boolean variable that gets
-		// passed to the other function because they are defined through the
-		// same closure :P. 
+		todo_dialog.addEventListener("cancel", (e) => {
+			pressed = false; 
+		});  	
+
 		todo_dialog_btn.addEventListener("click", (e) => {
 			if(!pressed) {
 				return;
@@ -286,6 +284,7 @@ export function create_DOM_handler(container, display_container) {
 			delete_btn.addEventListener("click", (e) => {
 				for(let j = 0; j < projects.length; j++) {
 					if(projects[j].id === project_ref.id) {
+						storage_handler.remove_project(project_ref); 
 						projects.splice(j, 1);
 						display_DOM_projects(projects);
 					}	
@@ -311,5 +310,55 @@ export function create_DOM_handler(container, display_container) {
 		}
 	}
 
-	return { display_DOM_projects, create_DOM_todos, toggle_DOM_todos }; 
+	const display_DOM_today = (projects) => {
+		// Function to display todos that are needed for today; 
+
+		// Clear previous display
+		display_container.innerHTML = ''; 
+		const today_todo = []; 
+		
+		// Dates occur on same day, if month, year, and date are the same. 
+		const check_date = (d1, d2) => {
+			return (d1.getDate() === d2.getDate()) && (d1.getMonth() === d2.getMonth()) && (d1.getFullYear() === d2.getFullYear()); 
+		}
+
+		for(let i = 0; i < projects.length; i++) {
+			for(let j = 0; j < projects[i].todo_list.length; j++) {
+				// projects[i][j] -> Specific todo 
+				const todo_list = projects[i].todo_list; 
+
+				const current_date = new Date();  
+				const todo_date = new Date(todo_list[j].due_date);
+
+				// Date automatically initalized to current date
+				if(check_date(current_date, todo_date)) {
+					today_todo.push(todo_list[j]); 
+				}
+			}	
+		}
+	
+		// All todos for today aquired ... Need to now display all of them
+		
+		const today_title = document.createElement('h1');
+		today_title.textContent = "Tasks For Today"; 
+
+		const todo_list_container = document.createElement("form");
+		
+		today_todo.sort((a, b) => Date(a.due_date) - Date(b.due_date)); 
+		
+		for(let i = 0; i < today_todo.length; i++) {
+			const todo_item = document.createElement("label");
+			todo_item.textContent = today_todo[i].title; 
+			const check_box = document.createElement("input");
+			check_box.setAttribute("type", "checkbox");
+			todo_item.append(check_box);
+			todo_list_container.append(todo_item);	
+		} 
+		
+		// Add to display container;
+		display_container.append(today_title);
+		display_container.append(todo_list_container);
+	}
+	
+	return { display_DOM_projects, display_DOM_today }; 
 }

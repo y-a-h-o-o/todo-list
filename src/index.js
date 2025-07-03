@@ -20,7 +20,7 @@ const project_form = document.querySelector("dialog#project form");
 
 // Application creation
 const app = create_app(parent_container, display_container);
-app.add_project("Default Project...");
+app.load_data(); 
 
 project_btn.addEventListener("click", (e) => {
 	project_dialog.showModal(); 	

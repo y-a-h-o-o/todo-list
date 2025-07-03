@@ -4,8 +4,7 @@
 // How are date and time going to be passed ?
 // Should notes be passed as an array of values ?
 
-export function create_todo(title, description, due_date, priority, notes) {
-	const id = crypto.randomUUID();
+export function create_todo(title, description, due_date, priority, notes, id = crypto.randomUUID()) {
 	const display = false; 
 	return { display, id, title, description, due_date, priority, notes }; 	
 }
