@@ -54,6 +54,18 @@ export function create_storage_handler() {
 		
 		localStorage.setItem(storage_key, data);	
 	}
+		
+	const edit_todo = (project_id, todo) => {
+		const storage_key = project_id + "+" + todo.id; 
+		if(!localStorage.getItem(storage_key)) {
+			console.log("Cannot find key to edit!");
+			return; 
+		}
+		
+		const delim = "\u001F"; 
+		const new_data = [todo.title, todo.description, todo.due_date, todo.priority, todo.notes].join(delim);
+		localStorage.setItem(storage_key, new_data);	
+	} 
 
 	const remove_todo = (project_id, todo) => {
 		const storage_key = project_id + "+" + todo.id; 
@@ -86,6 +98,6 @@ export function create_storage_handler() {
 		return (localStorage.length !== 0); 
 	}
 
-	return { store_todo, remove_todo, store_project, remove_project, has_storage }; 
+	return { store_todo, remove_todo, store_project, remove_project, has_storage, edit_todo }; 
 }
 

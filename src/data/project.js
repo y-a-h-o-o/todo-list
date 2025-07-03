@@ -6,7 +6,6 @@ import { create_todo } from "./todo.js";
 // Has a DOM function to show all TODOs ? Or put that in a seperate JS file ?
 // idk :/ , 
 
-
 export function create_project(name, storage_handler, id = crypto.randomUUID()) {
 	const todo_list = [];
 	const display = false; 
@@ -31,11 +30,21 @@ export function create_project(name, storage_handler, id = crypto.randomUUID()) 
 		return todo; 
 	}
 	
+	const edit_todo = (title, description, due_date, priority, notes, todo_ref) => {
+		todo_ref.title = title; 
+		todo_ref.description = description; 
+		todo_ref.due_date = due_date; 
+		todo_ref.priority = priority; 
+		todo_ref.notes = notes; 
+		
+		storage_handler.edit_todo(id, todo_ref);
+	}
+
 	const add_todo_storageless = (title, description, due_date, priority, notes, id) => {
 		const todo = create_todo(title, description, due_date, priority, notes, id);
 		todo_list.push(todo); 
 		return todo; 
 	}
 
-	return { display, todo_display, id, name, todo_list, delete_todo, add_todo, add_todo_storageless }; 
+	return { display, todo_display, id, name, todo_list, delete_todo, add_todo, edit_todo, add_todo_storageless }; 
 }
