@@ -63,6 +63,16 @@ export function create_storage_handler() {
 		}
 		
 		const delim = "\u001F"; 
+		
+		for(const key in todo) {
+			if(key === "display" || key === "id") {
+				continue; 
+			}
+			if(todo.hasOwnProperty(key)) {
+				todo[key] = sanitize_data(todo[key]); 		
+			}
+		}
+
 		const new_data = [todo.title, todo.description, todo.due_date, todo.priority, todo.notes].join(delim);
 		localStorage.setItem(storage_key, new_data);	
 	} 
